@@ -7,9 +7,7 @@ output: html_document
 
 #### 1. Carga del conjunto de datos
 
-```{r carga, include=FALSE, cache=TRUE}
-activity <- read.csv(unz("activity.zip", "activity.csv"), stringsAsFactors = FALSE)
-```
+
 
 #### Caracteristicas
 
@@ -27,9 +25,7 @@ variables incluidas en este conjunto de datos son:
 #### 2. Procesar/transformar los datos
 
 
-```{r, include=FALSE }
-activity$date <- as.Date(activity$date, format = "%Y-%m-%d")
-```
+
 
 ### ¿Cuál es el número medio total de pasos dados por día?
 
@@ -41,7 +37,8 @@ de datos.
 2. Calcule e indique la **media** y la **mediana** del número total de pasos 
 dados por día.
 
-```{r PA1_activity-PPD, fig.path="figure/"}
+
+``` r
 total_steps_day <- aggregate(steps ~ date, data = activity, FUN = sum, na.rm = TRUE)
 
 hist(total_steps_day$steps,
@@ -50,12 +47,27 @@ hist(total_steps_day$steps,
     ylab = "Frecuencia",
     col = "lightblue",
     border = "white")
+```
 
+![plot of chunk PA1_activity-PPD](figure/PA1_activity-PPD-1.png)
+
+``` r
 mean_steps_day <- mean(total_steps_day$steps)
 median_steps_day <- median(total_steps_day$steps)
 
 mean_steps_day
+```
+
+```
+## [1] 10766.19
+```
+
+``` r
 median_steps_day
+```
+
+```
+## [1] 10765
 ```
 
 ### ¿Cuál es el patrón de actividad diaria promedio?
@@ -67,7 +79,8 @@ lo largo de todos los días (eje y).
 2. ¿Qué intervalo de 5 minutos, en promedio a lo largo de todos los días del 
 conjunto de datos, contiene el mayor número de pasos?
 
-```{r PA1_activity-ADP, fig.path="figure/"}
+
+``` r
 avg_steps_interval <- aggregate(steps ~ interval, data = activity, FUN = mean, na.rm = TRUE)
 
 plot(avg_steps_interval$interval,
@@ -76,9 +89,17 @@ plot(avg_steps_interval$interval,
     xlab = "Intervalo de 5 minutos",
     ylab = "Promedio de pasos",
     main = "Patrón de actividad diaria promedio")
+```
 
+![plot of chunk PA1_activity-ADP](figure/PA1_activity-ADP-1.png)
+
+``` r
 max_interval <- avg_steps_interval$interval[which.max(avg_steps_interval$steps)]
 max_interval
+```
+
+```
+## [1] 835
 ```
 
 ### Imputación de valores faltantes
@@ -103,10 +124,17 @@ informe la **media** y la **mediana** del número total de pasos dados por día.
 ¿Qué impacto tiene la imputación de datos faltantes en las estimaciones del 
 número total de pasos diarios?
 
-```{r PA1_activity-TPD, fig.path="figure/"}
+
+``` r
 na_total <- sum(is.na(activity$steps))
 na_total
+```
 
+```
+## [1] 2304
+```
+
+``` r
 # Estrategia: imputar cada NA de steps con la media de su intervalo de 5 minutos.
 interval_means <- aggregate(steps ~ interval, data = activity, FUN = mean, na.rm = TRUE)
 
@@ -124,17 +152,59 @@ hist(total_steps_day_filled$steps,
          ylab = "Frecuencia",
          col = "lightgreen",
          border = "white")
+```
 
+![plot of chunk PA1_activity-TPD](figure/PA1_activity-TPD-1.png)
+
+``` r
 mean_steps_day_filled <- mean(total_steps_day_filled$steps)
 median_steps_day_filled <- median(total_steps_day_filled$steps)
 
 mean_steps_day_filled
-median_steps_day_filled
+```
 
+```
+## [1] 10766.19
+```
+
+``` r
+median_steps_day_filled
+```
+
+```
+## [1] 10766.19
+```
+
+``` r
 cat("Media sin imputar:", mean_steps_day, "\n")
+```
+
+```
+## Media sin imputar: 10766.19
+```
+
+``` r
 cat("Mediana sin imputar:", median_steps_day, "\n")
+```
+
+```
+## Mediana sin imputar: 10765
+```
+
+``` r
 cat("Media con imputación:", mean_steps_day_filled, "\n")
+```
+
+```
+## Media con imputación: 10766.19
+```
+
+``` r
 cat("Mediana con imputación:", median_steps_day_filled, "\n")
+```
+
+```
+## Mediana con imputación: 10766.19
 ```
 
 ### ¿Existen diferencias en los patrones de actividad entre los días laborables y los fines de semana?
@@ -150,7 +220,8 @@ o un fin de semana.
 "l"`) del intervalo de 5 minutos (eje x) y el número promedio de pasos dados, 
 promediado para todos los días laborables o fines de semana (eje y).
 
-```{r PA1_activity-DSF, fig.path="figure/"}
+
+``` r
 library(lattice)
 
 activity_filled$day_type <- ifelse(
@@ -172,3 +243,5 @@ xyplot(steps ~ interval | day_type,
              xlab = "Intervalo de 5 minutos",
              ylab = "Número promedio de pasos")
 ```
+
+![plot of chunk PA1_activity-DSF](figure/PA1_activity-DSF-1.png)
