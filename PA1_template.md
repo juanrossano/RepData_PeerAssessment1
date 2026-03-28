@@ -1,55 +1,56 @@
 ---
-title: "Solucion"
+title: "Solution"
 author: "Juan Rossano"
 date: "2026-03-25"
-output: html_document
+output:
+  html_document:
+    keep_md: true
 ---
 
-#### 1. Carga del conjunto de datos
+#### 1. Loading the Dataset
 
 
 
-#### Caracteristicas
+#### Features
 
-variables incluidas en este conjunto de datos son:
+The variables included in this dataset are:
 
-* **steps**:    Número de pasos dados en un intervalo de 5 minutos (los valores 
-                faltantes se codifican como `NA`).
+* **steps**:    Number of steps taken in a 5-minute interval (missing values 
+                are coded as `NA`).
 
-* **date**:     Fecha en que se tomó la medición en formato AAAA-MM-DD
+* **date**:     Date in which the measurement was taken in YYYY-MM-DD format.
 
-* **interval**: Identificador del intervalo de 5 minutos en el que se tomó la 
-                medición
-
-
-#### 2. Procesar/transformar los datos
+* **interval**: Identifier for the 5-minute interval in which measurement was 
+                taken.
 
 
+#### 2. Processing/Transforming the Data
 
 
-### ¿Cuál es el número medio total de pasos dados por día?
 
-Para esta parte de la tarea, puede ignorar los valores faltantes en el conjunto 
-de datos.
 
-1. Cree un histograma del número total de pasos dados cada día.
+### What Is the Mean Total Number of Steps Taken Per Day?
 
-2. Calcule e indique la **media** y la **mediana** del número total de pasos 
-dados por día.
+For this part of the assignment, missing values can be ignored.
+
+1. Create a histogram of the total number of steps taken each day.
+
+2. Calculate and report the **mean** and **median** of the total number of 
+steps taken per day.
 
 
 ``` r
 total_steps_day <- aggregate(steps ~ date, data = activity, FUN = sum, na.rm = TRUE)
 
 hist(total_steps_day$steps,
-    main = "Total de pasos por día",
-    xlab = "Pasos por día",
-    ylab = "Frecuencia",
+    main = "Total steps per day",
+    xlab = "Steps per day",
+    ylab = "Frequency",
     col = "lightblue",
     border = "white")
 ```
 
-![plot of chunk PA1_activity-PPD](figure/PA1_activity-PPD-1.png)
+![](figure/PA1_activity-PPD-1.png)<!-- -->
 
 ``` r
 mean_steps_day <- mean(total_steps_day$steps)
@@ -70,14 +71,14 @@ median_steps_day
 ## [1] 10765
 ```
 
-### ¿Cuál es el patrón de actividad diaria promedio?
+### What Is the Average Daily Activity Pattern?
 
-1. Crea un gráfico de series temporales (es decir, `type = "l"`) con el 
-intervalo de 5 minutos (eje x) y el número promedio de pasos dados, promediado a 
-lo largo de todos los días (eje y).
+1. Create a time series plot (i.e., `type = "l"`) of the 5-minute interval 
+(x-axis) and the average number of steps taken, averaged across all days 
+(y-axis).
 
-2. ¿Qué intervalo de 5 minutos, en promedio a lo largo de todos los días del 
-conjunto de datos, contiene el mayor número de pasos?
+2. Which 5-minute interval, on average across all days in the dataset, contains 
+the maximum number of steps?
 
 
 ``` r
@@ -86,12 +87,12 @@ avg_steps_interval <- aggregate(steps ~ interval, data = activity, FUN = mean, n
 plot(avg_steps_interval$interval,
     avg_steps_interval$steps,
     type = "l",
-    xlab = "Intervalo de 5 minutos",
-    ylab = "Promedio de pasos",
-    main = "Patrón de actividad diaria promedio")
+    xlab = "5-minute interval",
+    ylab = "Average steps",
+    main = "Average daily activity pattern")
 ```
 
-![plot of chunk PA1_activity-ADP](figure/PA1_activity-ADP-1.png)
+![](figure/PA1_activity-ADP-1.png)<!-- -->
 
 ``` r
 max_interval <- avg_steps_interval$interval[which.max(avg_steps_interval$steps)]
@@ -102,27 +103,27 @@ max_interval
 ## [1] 835
 ```
 
-### Imputación de valores faltantes
+### Imputing Missing Values
 
-Tenga en cuenta que hay varios días/intervalos con valores faltantes 
-(codificados como `NA`). La presencia de días faltantes puede introducir sesgos 
-en algunos cálculos o resúmenes de los datos.
+Note that there are several days/intervals with missing values (coded as 
+`NA`). The presence of missing days may introduce bias in some calculations or 
+summaries of the data.
 
-1. Calcule e informe el número total de valores faltantes en el conjunto de 
-datos (es decir, el número total de filas con `NA`).
+1. Calculate and report the total number of missing values in the dataset 
+(i.e., the total number of rows with `NA`).
 
-2. Diseñe una estrategia para completar todos los valores faltantes en el 
-conjunto de datos. La estrategia no necesita ser compleja. Por ejemplo, podría 
-usar la media/mediana de ese día, o la media de ese intervalo de 5 minutos, etc.
+2. Design a strategy to fill in all missing values in the dataset. The strategy 
+does not need to be complex. For example, you could use the mean/median for 
+that day, or the mean for that 5-minute interval, etc.
 
-3. Cree un nuevo conjunto de datos idéntico al original, pero con los datos 
-faltantes completados.
+3. Create a new dataset that is equal to the original one but with missing 
+values filled in.
 
-4. Cree un histograma del número total de pasos dados cada día y calcule e 
-informe la **media** y la **mediana** del número total de pasos dados por día. 
-¿Estos valores difieren de las estimaciones de la primera parte de la tarea? 
-¿Qué impacto tiene la imputación de datos faltantes en las estimaciones del 
-número total de pasos diarios?
+4. Create a histogram of the total number of steps taken each day and calculate 
+and report the **mean** and **median** total number of steps taken per day. Do 
+these values differ from the estimates in the first part of the assignment? 
+What is the impact of imputing missing data on the estimates of the total daily 
+number of steps?
 
 
 ``` r
@@ -135,7 +136,7 @@ na_total
 ```
 
 ``` r
-# Estrategia: imputar cada NA de steps con la media de su intervalo de 5 minutos.
+# Strategy: impute each NA in steps with the mean of its 5-minute interval.
 interval_means <- aggregate(steps ~ interval, data = activity, FUN = mean, na.rm = TRUE)
 
 activity_filled <- activity
@@ -147,14 +148,14 @@ activity_filled$steps[na_index] <- interval_means$steps[
 total_steps_day_filled <- aggregate(steps ~ date, data = activity_filled, FUN = sum)
 
 hist(total_steps_day_filled$steps,
-         main = "Total de pasos por día (con imputación)",
-         xlab = "Pasos por día",
-         ylab = "Frecuencia",
+         main = "Total steps per day (with imputation)",
+         xlab = "Steps per day",
+         ylab = "Frequency",
          col = "lightgreen",
          border = "white")
 ```
 
-![plot of chunk PA1_activity-TPD](figure/PA1_activity-TPD-1.png)
+![](figure/PA1_activity-TPD-1.png)<!-- -->
 
 ``` r
 mean_steps_day_filled <- mean(total_steps_day_filled$steps)
@@ -176,49 +177,49 @@ median_steps_day_filled
 ```
 
 ``` r
-cat("Media sin imputar:", mean_steps_day, "\n")
+cat("Mean without imputation:", mean_steps_day, "\n")
 ```
 
 ```
-## Media sin imputar: 10766.19
-```
-
-``` r
-cat("Mediana sin imputar:", median_steps_day, "\n")
-```
-
-```
-## Mediana sin imputar: 10765
+## Mean without imputation: 10766.19
 ```
 
 ``` r
-cat("Media con imputación:", mean_steps_day_filled, "\n")
+cat("Median without imputation:", median_steps_day, "\n")
 ```
 
 ```
-## Media con imputación: 10766.19
+## Median without imputation: 10765
 ```
 
 ``` r
-cat("Mediana con imputación:", median_steps_day_filled, "\n")
+cat("Mean with imputation:", mean_steps_day_filled, "\n")
 ```
 
 ```
-## Mediana con imputación: 10766.19
+## Mean with imputation: 10766.19
 ```
 
-### ¿Existen diferencias en los patrones de actividad entre los días laborables y los fines de semana?
+``` r
+cat("Median with imputation:", median_steps_day_filled, "\n")
+```
 
-Para esta parte, la función `weekdays()` puede ser útil. Utilice el conjunto de 
-datos con los valores faltantes completados.
+```
+## Median with imputation: 10766.19
+```
 
-1. Cree una nueva variable categórica en el conjunto de datos con dos niveles: 
-"weekday" y "weekend", que indiquen si una fecha determinada es un día laborable 
-o un fin de semana.
+### Are There Differences in Activity Patterns Between Weekdays and Weekends?
 
-1. Cree un gráfico de panel que contenga una serie temporal (es decir, `type = 
-"l"`) del intervalo de 5 minutos (eje x) y el número promedio de pasos dados, 
-promediado para todos los días laborables o fines de semana (eje y).
+For this part, the `weekdays()` function may be helpful. Use the dataset with 
+missing values already filled in.
+
+1. Create a new categorical variable in the dataset with two levels: 
+"weekday" and "weekend", indicating whether a given date is a weekday or a 
+weekend day.
+
+1. Create a panel plot containing a time series plot (i.e., `type = "l"`) of 
+the 5-minute interval (x-axis) and the average number of steps taken, averaged 
+for all weekday days or weekend days (y-axis).
 
 
 ``` r
@@ -240,8 +241,8 @@ xyplot(steps ~ interval | day_type,
              data = avg_by_daytype,
              type = "l",
              layout = c(1, 2),
-             xlab = "Intervalo de 5 minutos",
-             ylab = "Número promedio de pasos")
+             xlab = "5-minute interval",
+             ylab = "Average number of steps")
 ```
 
-![plot of chunk PA1_activity-DSF](figure/PA1_activity-DSF-1.png)
+![](figure/PA1_activity-DSF-1.png)<!-- -->
